@@ -1,13 +1,11 @@
 import os
 import time
 
-import torch
-import transforms as T
-import numpy as np
-from PIL import Image
-from my_dataset import MyDataset
 import matplotlib.pyplot as plt
+import torch
 
+import transforms as T
+from my_dataset import MyDataset
 from src import UNet
 
 

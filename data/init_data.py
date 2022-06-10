@@ -1,11 +1,9 @@
+import glob
 import os
 import random
-import SimpleITK as sitk
-import glob
+
 import numpy as np
 from tqdm import tqdm
-import cv2
-import collections
 
 
 # 随机将整个数据集划分，将信息写入txt文件中

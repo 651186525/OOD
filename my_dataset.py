@@ -1,6 +1,7 @@
 import os
-from PIL import Image
+
 import numpy as np
+from PIL import Image
 from torch.utils.data import Dataset
 
 
@@ -28,7 +29,7 @@ class MyDataset(Dataset):
         # 2D切片：将brain共256个切片， 取出16个切片，第一个切片为索引7（第八个），第二个为23，依次类推  32
         slice_interval = 256 / self.slice_num
         img_index = idx // self.slice_num
-        slice_index = int((idx % self.slice_num) * slice_interval + slice_interval/2 - 1)
+        slice_index = int((idx % self.slice_num) * slice_interval + slice_interval / 2 - 1)
 
         img_3d = np.load(self.img_name_list[img_index] + '_data.npy')
         # 切片方式暂定为切第一个维度
@@ -44,7 +45,7 @@ class MyDataset(Dataset):
 
     def __len__(self):
         # 切片数为16
-        return len(self.img_name_list*16)
+        return len(self.img_name_list * 16)
 
     @staticmethod
     def collate_fn(batch):
@@ -61,5 +62,3 @@ def cat_list(images, fill_value=0):
     for img, pad_img in zip(images, batched_imgs):
         pad_img[..., :img.shape[-2], :img.shape[-1]].copy_(img)
     return batched_imgs
-
-

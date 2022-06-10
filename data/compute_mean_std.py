@@ -1,8 +1,7 @@
 import os
-from PIL import Image
+
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 
 def main():
@@ -18,7 +17,7 @@ def main():
     for img_name in tqdm(img_name_list):
         for slice_index in range(slice_num):
             # 暂定切第一个维度，每个维度切16片
-            slice = int(slice_index * slice_num + (256 / slice_num)/2 - 1)
+            slice = int(slice_index * slice_num + (256 / slice_num) / 2 - 1)
             img_3d = np.load(img_name + '_data.npy')
             img = img_3d[slice, :, :]
             # plt.imshow(img, cmap='gray')

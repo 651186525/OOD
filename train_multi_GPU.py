@@ -1,14 +1,14 @@
-import time
-import os
 import datetime
+import os
+import time
 
 import matplotlib.pyplot as plt
 import torch
 
+import transforms as T
+from my_dataset import MyDataset
 from src import UNet
 from train_utils import train_one_epoch, evaluate, create_lr_scheduler, init_distributed_mode, save_on_master, mkdir
-from my_dataset import MyDataset
-import transforms as T
 
 
 class SegmentationPresetTrain:
@@ -81,10 +81,10 @@ def main(args):
         raise FileNotFoundError("data dose not in path:'{}'.".format(data_root))
 
     train_dataset = MyDataset(args.data_path, data_type='train',
-                                 transforms=get_transform(train=True, mean=mean, std=std))
+                              transforms=get_transform(train=True, mean=mean, std=std))
 
     val_dataset = MyDataset(args.data_path, data_type='val',
-                               transforms=get_transform(train=False, mean=mean, std=std))
+                            transforms=get_transform(train=False, mean=mean, std=std))
 
     print("Creating data loaders")
     if args.distributed:

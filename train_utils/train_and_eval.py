@@ -1,7 +1,7 @@
 import torch
 from torch import nn
+
 import train_utils.distributed_utils as utils
-from .dice_coefficient_loss import dice_loss, build_target
 
 
 def criterion(inputs, target, ignore_index: int = -100):
@@ -44,9 +44,9 @@ def evaluate(model, data_loader, device, num_classes):
             pre = output[roi_mask]
             target_ = mask[roi_mask]
             loss += nn.functional.mse_loss(pre, target_)
-    print('val loss:', loss/len(data_loader))
+    print('val loss:', loss / len(data_loader))
 
-    return loss/len(data_loader)
+    return loss / len(data_loader)
 
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch, num_classes,

@@ -1,12 +1,12 @@
-from collections import defaultdict, deque
 import datetime
-import time
-import torch
-import torch.nn.functional as F
-import torch.distributed as dist
-
 import errno
 import os
+import time
+from collections import defaultdict, deque
+
+import torch
+import torch.distributed as dist
+import torch.nn.functional as F
 
 from .dice_coefficient_loss import multiclass_dice_coeff, build_target
 
@@ -88,7 +88,7 @@ class ConfusionMatrix(object):
             k = (a >= 0) & (a < n)
             # 统计像素真实类别a[k]被预测成类别b[k]的个数(这里的做法很巧妙)
             inds = n * a[k].to(torch.int64) + b[k]
-            self.mat += torch.bincount(inds, minlength=n**2).reshape(n, n)
+            self.mat += torch.bincount(inds, minlength=n ** 2).reshape(n, n)
 
     def reset(self):
         if self.mat is not None:
@@ -119,10 +119,10 @@ class ConfusionMatrix(object):
             'average row correct: {}\n'
             'IoU: {}\n'
             'mean IoU: {:.1f}').format(
-                acc_global.item() * 100,
-                ['{:.1f}'.format(i) for i in (acc * 100).tolist()],
-                ['{:.1f}'.format(i) for i in (iu * 100).tolist()],
-                iu.mean().item() * 100)
+            acc_global.item() * 100,
+            ['{:.1f}'.format(i) for i in (acc * 100).tolist()],
+            ['{:.1f}'.format(i) for i in (iu * 100).tolist()],
+            iu.mean().item() * 100)
 
 
 class DiceCoefficient(object):

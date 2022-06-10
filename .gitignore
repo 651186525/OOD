@@ -1,0 +1,6 @@
+.idea
+data/brain
+data/origin_data
+data/*.zip
+model
+__pycache__

@@ -67,8 +67,8 @@ def main(args):
     # segmentation nun_classes
     num_classes = args.num_classes
 
-    mean = (19.66,)
-    std = (30.63,)
+    mean = (0.0768,)
+    std = (0.1196,)
 
     # 用来保存coco_info的文件
     results_file = args.output_dir + '/result.txt'
@@ -119,9 +119,11 @@ def main(args):
 
     params_to_optimize = [p for p in model_without_ddp.parameters() if p.requires_grad]
 
-    optimizer = torch.optim.SGD(
-        params_to_optimize,
-        lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    # optimizer = torch.optim.SGD(
+    #     params_to_optimize,
+    #     lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        params_to_optimize, weight_decay=args.weight_decay)
 
     scaler = torch.cuda.amp.GradScaler() if args.amp else None
 
@@ -226,7 +228,7 @@ if __name__ == "__main__":
     # 指定接着从哪个epoch数开始训练
     parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
     # 训练的总epoch数
-    parser.add_argument('--epochs', default=20, type=int, metavar='N',
+    parser.add_argument('--epochs', default=100, type=int, metavar='N',
                         help='number of total epochs to run')
     # 是否使用同步BN(在多个GPU之间同步)，默认不开启，开启后训练速度会变慢
     parser.add_argument('--sync_bn', type=bool, default=True, help='whether using SyncBatchNorm')
@@ -248,7 +250,7 @@ if __name__ == "__main__":
     # 训练过程打印信息的频率
     parser.add_argument('--print-freq', default=1, type=int, help='print frequency')
     # 文件保存地址
-    parser.add_argument('--output-dir', default='./model/sgd0.01_b128', help='path where to save')
+    parser.add_argument('--output-dir', default='./model/Adam_b128', help='path where to save')
     # 基于上次的训练结果接着训练
     parser.add_argument('--resume', default='', help='resume from checkpoint')
     # 不训练，仅测试
@@ -274,3 +276,4 @@ if __name__ == "__main__":
         mkdir(args.output_dir)
 
     main(args)
+    # CUDA_VISIBLE_DEVICES=1,2 torchrun --nproc_per_node=2 train_multi_GPU.py

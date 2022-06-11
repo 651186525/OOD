@@ -3,6 +3,7 @@ import os
 import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
+from torchvision.transforms.functional import to_pil_image, to_tensor
 
 
 class MyDataset(Dataset):
@@ -36,10 +37,12 @@ class MyDataset(Dataset):
         img = img_3d[slice_index, :, :]
 
         # mask 即为img
-        img = Image.fromarray(img, mode="L")
+        # img = Image.fromarray(img, mode="L")
+        img = to_pil_image(to_tensor(img))
         mask = img
         if self.transforms is not None:
             img, mask = self.transforms(img, mask)
+        mask = mask.squeeze()
 
         return img, mask
 

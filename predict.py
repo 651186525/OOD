@@ -8,6 +8,8 @@ import transforms as T
 from my_dataset import MyDataset
 from src import UNet
 
+from skimage.metrics import structural_similarity, peak_signal_noise_ratio, mean_squared_error, normalized_root_mse
+
 
 def time_synchronized():
     torch.cuda.synchronize() if torch.cuda.is_available() else None
@@ -16,11 +18,12 @@ def time_synchronized():
 
 def main():
     classes = 1  # exclude background
-    weights_path = "./model/sgd0.01_b128_812.007/best_model.pth"
+    weights_path = "./model/Adam_b128_0.0/best_model.pth"
     assert os.path.exists(weights_path), f"weights {weights_path} not found."
 
-    mean = (19.66,)
-    std = (30.63,)
+    mean = (0.0768,)
+    std = (0.1196,)
+
     test_dataset = MyDataset(os.getcwd(), data_type='test', transforms=T.Compose([
         T.ToTensor(),
         T.Normalize(mean=mean, std=std),
@@ -58,6 +61,11 @@ def main():
             plt.imshow(target.squeeze(), cmap='gray')
             plt.title('GT')
             plt.show()
+
+            # compare metric
+            structural_similarity(output, target, multichannel=True)
+            peak_signal_noise_ratio(output, target)
+            mean_squared_error(output, target)
 
 
 if __name__ == '__main__':

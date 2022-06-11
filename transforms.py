@@ -40,7 +40,7 @@ class RandomResize(object):
         image = F.resize(image, size)
         # 这里的interpolation注意下，在torchvision(0.9.0)以后才有InterpolationMode.NEAREST
         # 如果是之前的版本需要使用PIL.Image.NEAREST
-        target = F.resize(target, size, interpolation=T.InterpolationMode.NEAREST)
+        target = F.resize(target, size)
         return image, target
 
 
@@ -92,7 +92,7 @@ class CenterCrop(object):
 class ToTensor(object):
     def __call__(self, image, target):
         image = F.to_tensor(image)
-        target = torch.as_tensor(np.array(target), dtype=torch.int64)
+        target = F.to_tensor(target)
         return image, target
 
 

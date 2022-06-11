@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def main():
     img_channels = 1
-    data_root = './data/brain/brain_train'
+    data_root = './brain/brain_train'
     txt_path = 'brain/train.txt'
     slice_num = 16
     with open(txt_path) as read:
@@ -25,8 +25,8 @@ def main():
             cumulative_mean += img.mean()
             cumulative_std += img.std()
 
-    mean = cumulative_mean / len(img_name_list) * slice_num
-    std = cumulative_std / len(img_name_list) * slice_num
+    mean = cumulative_mean / (len(img_name_list) * slice_num)
+    std = cumulative_std / (len(img_name_list) * slice_num)
     print(f"mean: {mean}")
     print(f"std: {std}")
 

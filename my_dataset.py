@@ -1,4 +1,5 @@
 import os
+import random
 
 import numpy as np
 from PIL import Image
@@ -31,6 +32,8 @@ class MyDataset(Dataset):
         slice_interval = 256 / self.slice_num
         img_index = idx // self.slice_num
         slice_index = int((idx % self.slice_num) * slice_interval + slice_interval / 2 - 1)
+        if random.random() < 0.5:
+            slice_index += 1
 
         img_3d = np.load(self.img_name_list[img_index] + '_data.npy')
         # 切片方式暂定为切第一个维度
@@ -39,16 +42,17 @@ class MyDataset(Dataset):
         # mask 即为img
         # img = Image.fromarray(img, mode="L")
         img = to_pil_image(to_tensor(img))
-        mask = img
+        mask = img.copy()
         if self.transforms is not None:
             img, mask = self.transforms(img, mask)
+        mask[mask == 0] = 255
         mask = mask.squeeze()
 
         return img, mask
 
     def __len__(self):
         # 切片数为16
-        return len(self.img_name_list * 16)
+        return len(self.img_name_list * self.slice_num)
 
     @staticmethod
     def collate_fn(batch):

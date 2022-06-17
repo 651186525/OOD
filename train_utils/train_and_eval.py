@@ -43,7 +43,7 @@ def evaluate(model, data_loader, device, num_classes):
             roi_mask = torch.ne(mask, 255)
             pre = output[roi_mask]
             target_ = mask[roi_mask]
-            loss += nn.functional.mse_loss(pre, target_)
+            loss += nn.functional.mse_loss(pre, target_) if len(target_) > 0 else 0
     print('val loss:', loss / len(data_loader))
 
     return loss / len(data_loader)

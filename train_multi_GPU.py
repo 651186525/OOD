@@ -81,10 +81,10 @@ def main(args):
         raise FileNotFoundError("data dose not in path:'{}'.".format(data_root))
 
     train_dataset = MyDataset(args.data_path, data_type='train',
-                              transforms=get_transform(train=True, mean=mean, std=std))
+                              transforms=get_transform(train=True, mean=mean, std=std), slice_num=128)
 
     val_dataset = MyDataset(args.data_path, data_type='val',
-                            transforms=get_transform(train=False, mean=mean, std=std))
+                            transforms=get_transform(train=False, mean=mean, std=std), slice_num=128)
 
     print("Creating data loaders")
     if args.distributed:
@@ -159,8 +159,8 @@ def main(args):
                                         lr_scheduler=lr_scheduler, print_freq=args.print_freq, scaler=scaler)
 
         val_loss = evaluate(model, val_data_loader, device=device, num_classes=num_classes)
-        train_losses.append(mean_loss)
-        val_losses.append(float(val_loss))
+        train_losses.append(mean_loss*100)
+        val_losses.append(float(val_loss)*100)
 
         # 只在主进程上进行写操作
         if args.rank in [-1, 0]:
@@ -196,13 +196,13 @@ def main(args):
                 save_on_master(save_file,
                                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
     if args.rank in [-1, 0]:
-        plt.plot(train_losses, 'r', label='train_loss')
-        plt.plot(val_losses, 'g', label='val_loss')
+        plt.plot(train_losses[3:], 'r', label='train_loss')
+        plt.plot(val_losses[3:], 'g', label='val_loss')
         plt.legend()
         plt.savefig(args.output_dir + '/loss.png')
         plt.close()
         # 重命名
-        new_name = args.output_dir + '_' + str(round(float(best_val_loss), 3))
+        new_name = args.output_dir + '_' + str(round(float(best_val_loss) * 1000, 3))
         os.rename(args.output_dir, new_name)
 
     total_time = time.time() - start_time
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     # 数据加载以及预处理的线程数
     parser.add_argument('-j', '--workers', default=10, type=int, metavar='N',
                         help='number of data loading workers (default: 4)')
-    # 训练学习率，这里默认设置成0.01(使用n块GPU建议乘以n)，如果效果不好可以尝试修改学习率
+    # 训练学习率，这里默认设置成0.01(使用n;块GPU建议乘以n)，如果效果不好可以尝试修改学习率
     parser.add_argument('--lr', default=0.01, type=float,
                         help='initial learning rate')
     # SGD的momentum参数
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     # 训练过程打印信息的频率
     parser.add_argument('--print-freq', default=1, type=int, help='print frequency')
     # 文件保存地址
-    parser.add_argument('--output-dir', default='./model/Adam_b128', help='path where to save')
+    parser.add_argument('--output-dir', default='./model/Adam_b128_s128_random_rmback', help='path where to save')
     # 基于上次的训练结果接着训练
     parser.add_argument('--resume', default='', help='resume from checkpoint')
     # 不训练，仅测试
